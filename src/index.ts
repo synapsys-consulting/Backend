@@ -4,6 +4,7 @@ import cors from "cors";
 import { sequelize } from "../src/models/db.model";
 
 import { usersRouter } from "./routes/user.router";
+import { productsRouter } from "./routes/product.router";
 import { angelsRouter } from "./routes/angel.router";
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(bodyParser.json());		// convierte a objetos json lo que nos llega por ht
 
 // Rutas base
 app.use("/server", usersRouter);
+app.use("/server", productsRouter);
 app.use("/server", angelsRouter);
 
 app.get('/', (_req, res) => res.send(`1 + 2 = ${one + two}`));

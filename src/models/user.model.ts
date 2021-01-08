@@ -104,7 +104,7 @@ User.init (
     sequelize,
     //paranoid: true,
     createdAt: 'create_date',
-    updatedAt: 'modify_date',
+    updatedAt: 'modify_date'
     //deletedAt: 'status_date'
 }
 );

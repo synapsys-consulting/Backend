@@ -2,7 +2,7 @@
  * Required External Modules and Interfaces
  */
 import express from "express";
-import * as AngelController from "../Controllers/angel.controller";
+import * as AngelController from "../controllers/angel.controller";
 
 /**
  * Router Definition

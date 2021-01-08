@@ -114,7 +114,7 @@ export async function deleteUser (req: Request, res: Response): Promise<void> {
         res.status(500).send( { "message": err + ": Error al intentar borrar el usuario."});
     });
 }
-export async function loginUser(req: Request, res: Response): Promise<void> {
+export async function loginUser (req: Request, res: Response): Promise<void> {
     const user_name: string = req.body.user_name;
     const password: string = req.body.password;
     const gethash: boolean = req.body.gethash;

@@ -2,7 +2,7 @@
  * Required External Modules and Interfaces
  */
 import express from "express";
-import * as UsersController from "../Controllers/user.controller";
+import * as UsersController from "../controllers/user.controller";
 
 
 /**
