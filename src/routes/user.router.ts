@@ -13,8 +13,11 @@ export const usersRouter = express.Router();
  * Controller Definitions
  */
 usersRouter.get("/probando-controlador", UsersController.pruebas);
-usersRouter.post("/login", UsersController.loginUser);
-usersRouter.post("/register", UsersController.saveUser);
+usersRouter.post("/login", UsersController.loginUserWithPersoneId);
+usersRouter.post("/loginWithoutPass", UsersController.loginWithoutPass);
+usersRouter.post("/register", UsersController.saveUserWithPersoneId);
 usersRouter.put("/updateUser/:id", UsersController.updateUser);
+usersRouter.put("/updateUserWithPersoneId/:id", UsersController.updateUserWithPersoneId);
 usersRouter.delete("/deleteUser/:id", UsersController.deleteUser);
 usersRouter.put("/changePassword/:id", UsersController.changePassword);
+usersRouter.put("/changePasswordWithPersoneId/:id", UsersController.changePasswordWithPersoneId);

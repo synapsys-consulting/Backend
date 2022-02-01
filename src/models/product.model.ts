@@ -1,6 +1,5 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelize } from "./db.model";
-import { ProductCategory } from "./productCategory.model";
 
 export class Product extends Model {
     public product_id!: number;
@@ -33,8 +32,8 @@ export class Product extends Model {
     public eff_date!: Date;
     public exp_date!: Date | null;
     public status_date!: Date;
-    public user_create_id!: string;
-    public user_modify_id!: string;
+    public user_create_id!: number | null;
+    public user_modify_id!: number | null;
     public scenario!: string;
     public days_exp!: number | null;
     public expoiled_flag!: string | null;
@@ -170,11 +169,11 @@ Product.init (
         allowNull: true        
     },
     user_create_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.BIGINT,
+        allowNull: true
     },
     user_modify_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.BIGINT,
         allowNull: true
     },
     scenario: {

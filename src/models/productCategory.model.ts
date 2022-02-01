@@ -11,7 +11,7 @@ export class ProductCategory extends Model {
     public eff_date!: Date | null;
     public exp_date!: Date | null;
     public status_date!: Date;
-    public user_create_id!: string;
+    public user_create_id!: number | null;
     public user_modify_id!: number | null;
     public scenario!: string | null;
     public partner_id!: string;
@@ -58,8 +58,8 @@ ProductCategory.init (
         allowNull: false
     },
     user_create_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.BIGINT,
+        allowNull: true
     },
     user_modify_id: {
         type: DataTypes.BIGINT,

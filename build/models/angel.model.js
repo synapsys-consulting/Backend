@@ -24,3 +24,4 @@ Angel.init({
     createdAt: 'create_date',
     updatedAt: 'modify_date',
 });
+//# sourceMappingURL=angel.model.js.map

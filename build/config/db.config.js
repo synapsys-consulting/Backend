@@ -15,3 +15,4 @@ exports.datosConexion = {
         idle: 10000
     }
 };
+//# sourceMappingURL=db.config.js.map

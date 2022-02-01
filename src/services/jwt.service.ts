@@ -1,6 +1,7 @@
 import jwtSimple from 'jwt-simple';
 import moment from 'moment';
 import { User } from '../models/user.model';
+import { PersoneIdentity } from '../models/personeIdentity.model'
 
 const secret = '895.ClAvE_PlAtAfOrMa_COMPRAS?3295_SeCrEtA?5874';
 
@@ -47,6 +48,34 @@ export function createToken(user: User): string {
 		rid: user.rid,
 		scenario: user.scenario,
 		imagen: user.imagen,
+		iat: moment().unix(),
+		exp: moment().add(30, 'days').unix
+    };
+    return jwtSimple.encode(payload, secret);
+}
+export function createTokenWithPersoneId(user: User, personeIdentity: PersoneIdentity): string {
+    const payload = {
+		user_id: user.user_id,
+		user_name: user.user_name,
+		user_lastname: user.user_lastname,
+		user_firstname: user.user_firstname,
+		phone_number: user.phone_number,
+		email: user.email,
+		zip_code: user.zip_code,
+		user_nickname: user.user_nickname,
+		status_id: user.status_id,
+		eff_date: user.eff_date,
+		exp_date: user.exp_date,
+		user_create_id: user.user_create_id,
+		user_modify_id: user.user_modify_id,
+		password: user.password,
+		role: user.role,
+		rid: user.rid,
+		scenario: user.scenario,
+		imagen: user.imagen,
+		persone_id: personeIdentity.persone_id,
+		partner_id: personeIdentity.partner_id,
+		partner_name: personeIdentity.partner_name,
 		iat: moment().unix(),
 		exp: moment().add(30, 'days').unix
     };

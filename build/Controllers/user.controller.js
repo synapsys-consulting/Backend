@@ -28,9 +28,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changePassword = exports.loginUser = exports.deleteUser = exports.updateUser = exports.saveUser = exports.pruebas = void 0;
+exports.changePassword = exports.loginWithoutPass = exports.loginUserWithPersoneId = exports.loginUser = exports.deleteUser = exports.updateUser = exports.saveUserWithPersoneId = exports.saveUser = exports.pruebas = void 0;
 const bcrypt = __importStar(require("bcrypt"));
 const user_model_1 = require("../models/user.model");
+const personeIdentity_model_1 = require("../models/personeIdentity.model");
+const db_model_1 = require("../models/db.model");
 const jwt = __importStar(require("../services/jwt.service"));
 const saltRounds = 10;
 function pruebas(req, res) {
@@ -43,59 +45,182 @@ function saveUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let newPassword;
         const newFecha = new Date();
+        const userName = req.body.user_name;
+        const userFirstName = req.body.user_firstname;
+        const userLastName = req.body.user_lastname;
+        const password = req.body.password;
+        const gethash = req.body.gethash;
+        console.log("Firstname es: " + userFirstName);
+        console.log("Lastname es: " + userLastName);
         if (!req.body) {
             res.status(400).send({ "message": "El contenido del cuerpo no puede estar vacío" });
         }
         else {
             console.log(req.body);
-            if (req.body.password) {
-                // encriptar contraseña y guardar datos
-                bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
-                    if (err) {
-                        res.status(400).send({ "message": "Error al encriptar la password" });
+            if (password) {
+                const transact = yield db_model_1.sequelize.transaction();
+                try {
+                    // encriptar contraseña y guardar datos
+                    newPassword = yield bcrypt.hash(password, saltRounds);
+                    const user = yield user_model_1.User.create({
+                        user_name: userName,
+                        user_lastname: userLastName,
+                        user_firstname: userFirstName,
+                        //phone_number: req.body.phone_number,
+                        email: userName,
+                        //birth_date: req.body.birth_date,
+                        //zip_code: req.body.zip_code,
+                        //user_nickname: req.body.user_nickname,
+                        //status_id: req.body.status_id,
+                        status_id: 'A',
+                        //eff_date: req.body.eff_date,
+                        //exp_date: req.body.exp_date,
+                        status_date: newFecha,
+                        user_create_id: "APP_KRRIDM",
+                        //user_modify_id: "APP_KRRIDM",
+                        password: newPassword,
+                        role: 'Usuario',
+                        //rid: req.body.rid,
+                        scenario: 'G',
+                    }, {
+                        transaction: transact
+                    });
+                    yield personeIdentity_model_1.PersoneIdentity.create({
+                        persone_name: userFirstName + ' ' + userLastName,
+                        persone_type: "C",
+                        status_date: newFecha,
+                        status_id: "A",
+                        user_create_id: "APP_KRRIDM",
+                        scenario: "G",
+                        currency_id: "EUR",
+                        language_code: "es-ES",
+                        email: userName,
+                        user_id: user.user_id
+                    }, {
+                        transaction: transact
+                    });
+                    if (gethash === "true") {
+                        res.status(200).send({ "token": jwt.createToken(user) });
                     }
                     else {
-                        newPassword = hash;
-                        console.log(newPassword);
-                        if (req.body.user_name && req.body.email && req.body.user_nickname) {
-                            // Guardar usuario
-                            user_model_1.User.create({
-                                user_name: req.body.user_name,
-                                user_lastname: req.body.user_lastname,
-                                user_firstname: req.body.user_firstname,
-                                phone_number: req.body.phone_number,
-                                email: req.body.email,
-                                birth_date: req.body.birth_date,
-                                zip_code: req.body.zip_code,
-                                user_nickname: req.body.user_nickname,
-                                status_id: req.body.status_id,
-                                eff_date: req.body.eff_date,
-                                exp_date: req.body.exp_date,
-                                status_date: newFecha,
-                                user_create_id: "APP_KRRIDM",
-                                //user_modify_id: "APP_KRRIDM",
-                                password: newPassword,
-                                role: req.body.role,
-                                rid: req.body.rid,
-                                scenario: 'G',
-                                imagen: req.body.imagen
-                            })
-                                .then(user => {
-                                res.status(200).send(user);
-                            })
-                                .catch(err => {
-                                res.status(500).send({
-                                    "message": err.message || ". Ocurrió un error mientras que se creaba el usuario."
-                                });
-                            });
-                        }
+                        res.status(200).send({ user });
                     }
-                });
+                    transact.commit();
+                }
+                catch (err) {
+                    console.log(err);
+                    transact.rollback();
+                    res.status(500).send({ message: err.message || " . Ocurrió un error mientras que se creaba el usuario." });
+                }
+            }
+            else {
+                res.status(400).send({ "message": "Debe introducirse una password" });
             }
         }
     });
 }
 exports.saveUser = saveUser;
+function saveUserWithPersoneId(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let newPassword;
+        const newFecha = new Date();
+        const userName = req.body.user_name;
+        const userFirstName = req.body.user_firstname;
+        const userLastName = req.body.user_lastname;
+        const password = req.body.password;
+        const gethash = req.body.gethash;
+        console.log("Firstname es: " + userFirstName);
+        console.log("Lastname es: " + userLastName);
+        if (!req.body) {
+            res.status(400).send({ "message": "El contenido del cuerpo no puede estar vacío" });
+        }
+        else {
+            console.log(req.body);
+            if (password) {
+                const transact = yield db_model_1.sequelize.transaction();
+                try {
+                    // encriptar contraseña y guardar datos
+                    newPassword = yield bcrypt.hash(password, saltRounds);
+                    const user = yield user_model_1.User.create({
+                        user_name: userName,
+                        user_lastname: userLastName,
+                        user_firstname: userFirstName,
+                        //phone_number: req.body.phone_number,
+                        email: userName,
+                        //birth_date: req.body.birth_date,
+                        //zip_code: req.body.zip_code,
+                        //user_nickname: req.body.user_nickname,
+                        //status_id: req.body.status_id,
+                        status_id: 'A',
+                        //eff_date: req.body.eff_date,
+                        //exp_date: req.body.exp_date,
+                        status_date: newFecha,
+                        user_create_id: "APP_KRRIDM",
+                        //user_modify_id: "APP_KRRIDM",
+                        password: newPassword,
+                        role: 'Usuario',
+                        //rid: req.body.rid,
+                        scenario: 'G',
+                    }, {
+                        transaction: transact
+                    });
+                    const personeIdentity = yield personeIdentity_model_1.PersoneIdentity.create({
+                        persone_name: userFirstName + ' ' + userLastName,
+                        persone_type: "C",
+                        status_date: newFecha,
+                        status_id: "A",
+                        user_create_id: "APP_KRRIDM",
+                        scenario: "G",
+                        currency_id: "EUR",
+                        language_code: "es-ES",
+                        email: userName,
+                        user_id: user.user_id
+                    }, {
+                        transaction: transact
+                    });
+                    if (gethash === "true") {
+                        res.status(200).send({ "token": jwt.createTokenWithPersoneId(user, personeIdentity) });
+                    }
+                    else {
+                        const userWithPersoneId = {
+                            user_id: user.user_id,
+                            user_name: user.user_name,
+                            user_lastname: user.user_lastname,
+                            user_firstname: user.user_firstname,
+                            phone_number: user.phone_number,
+                            email: user.email,
+                            birth_date: user.birth_date,
+                            zip_code: user.zip_code,
+                            user_nickname: user.user_nickname,
+                            status_id: user.status_id,
+                            eff_date: user.eff_date,
+                            exp_date: user.exp_date,
+                            user_create_id: user.user_create_id,
+                            user_modify_id: user.user_modify_id,
+                            password: user.password,
+                            role: user.role,
+                            rid: user.rid,
+                            imagen: user.imagen,
+                            scenario: user.scenario,
+                            persone_id: personeIdentity.persone_id
+                        };
+                        res.status(200).send({ userWithPersoneId });
+                    }
+                    transact.commit();
+                }
+                catch (err) {
+                    console.log(err);
+                    transact.rollback();
+                    res.status(500).send({ message: err.message || " . Ocurrió un error mientras que se creaba el usuario." });
+                }
+            }
+            else {
+                res.status(400).send({ "message": "Debe introducirse una password" });
+            }
+        }
+    });
+}
+exports.saveUserWithPersoneId = saveUserWithPersoneId;
 function updateUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const newFecha = new Date();
@@ -196,6 +321,99 @@ function loginUser(req, res) {
     });
 }
 exports.loginUser = loginUser;
+function loginUserWithPersoneId(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const user_name = req.body.user_name;
+        const password = req.body.password;
+        const gethash = req.body.gethash;
+        console.log("El user_name es: " + user_name);
+        console.log("La password es: " + password);
+        console.log("El gethash es: " + gethash);
+        try {
+            const user = yield user_model_1.User.findOne({
+                where: { user_name: user_name }
+            });
+            if (user) {
+                if (user.password) {
+                    const match = yield bcrypt.compare(password, user.password);
+                    if (match) {
+                        const personeIdentity = yield personeIdentity_model_1.PersoneIdentity.findOne({
+                            where: { user_id: user.user_id }
+                        });
+                        if (personeIdentity) {
+                            if (gethash) {
+                                res.status(200).send({ "token": jwt.createTokenWithPersoneId(user, personeIdentity) });
+                            }
+                            else {
+                                const userWithPersoneId = {
+                                    user_id: user.user_id,
+                                    user_name: user.user_name,
+                                    user_lastname: user.user_lastname,
+                                    user_firstname: user.user_firstname,
+                                    phone_number: user.phone_number,
+                                    email: user.email,
+                                    birth_date: user.birth_date,
+                                    zip_code: user.zip_code,
+                                    user_nickname: user.user_nickname,
+                                    status_id: user.status_id,
+                                    eff_date: user.eff_date,
+                                    exp_date: user.exp_date,
+                                    user_create_id: user.user_create_id,
+                                    user_modify_id: user.user_modify_id,
+                                    password: user.password,
+                                    role: user.role,
+                                    rid: user.rid,
+                                    imagen: user.imagen,
+                                    scenario: user.scenario,
+                                    persone_id: personeIdentity.persone_id
+                                };
+                                res.status(200).send({ userWithPersoneId });
+                            }
+                        }
+                        else {
+                            res.status(200).send({ "token": jwt.createToken(user) });
+                        }
+                    }
+                    else {
+                        res.status(404).send({ "message": "El usuario no se ha podido logear. La password no es correcta." });
+                    }
+                }
+                else {
+                    res.status(200).send({ "message": "El usuario no se ha podido logear." });
+                }
+            }
+            else {
+                res.status(404).send({ "message": "El usuario no se ha podido logear. El nombre de usuario no existe en el sistema." });
+            }
+        }
+        catch (err) {
+            console.log(err);
+            res.status(500).send({ message: err.message || " . Ocurrió un error mientras que se creaba el usuario." });
+        }
+    });
+}
+exports.loginUserWithPersoneId = loginUserWithPersoneId;
+function loginWithoutPass(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const user_name = req.body.user_name;
+        console.log("El user_name es: " + user_name);
+        yield user_model_1.User.findOne({
+            where: { user_name: user_name },
+        })
+            .then(user => {
+            if (user) {
+                res.status(200).send({ user_name: user.user_name });
+            }
+            else {
+                res.status(404).send({ "message": "El usuario no se ha podido logear. El nombre de usuario no existe en el sistema." });
+            }
+        })
+            .catch((err => {
+            res.status(500).send({ "message": err + ". El usuario no se ha podido logear. Intentelo de nuevo en unos minutos." });
+        }));
+    });
+}
+exports.loginWithoutPass = loginWithoutPass;
 function changePassword(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const password = req.body.password;
@@ -237,3 +455,4 @@ function changePassword(req, res) {
     });
 }
 exports.changePassword = changePassword;
+//# sourceMappingURL=user.controller.js.map
