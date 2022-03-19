@@ -224,12 +224,14 @@ export function queryGetProductsAvailableWithPartnerId (): string {
     ", A.MODIFY_DATE, A.CREATE_DATE , A.QUANTITY_MIN_PRICE,  A.QUANTITY_MAX_PRICE, A.PRODUCT_CATEGORY_ID" +
     ", ROW_NUMBER() OVER (PARTITION BY A.PRODUCT_NAME, E.PERSONE_NAME ORDER BY A.PARTNER_ID DESC, IFNULL(A.MODIFY_DATE, A.CREATE_DATE) DESC, A.PRODUCT_PRICE_FINAL DESC, A.PRODUCT_ID DESC) AS RN " +
 	"FROM (" +
-	"        SELECT PRODUCT_ID, PRODUCT_CODE, PRODUCT_NAME_INTERNAL PRODUCT_NAME, PRODUCT_NAME PRODUCT_NAME_LONG, PRODUCT_DESCRIPTION, PRODUCT_TYPE_ID, BRAND, REMARK, NUM_IMAGES" +
-	"        , NUM_VIDEOS, PROVIDER_ID, TAX_ID, PRODUCT_PRICE , PRODUCT_PRICE_FINAL, PARTNER_ID, PARTNER_NAME" +
-	"        , UNIT_ID, PRODUCT_CATEGORY_ID, IFNULL(MIN_QUANTITY_SELL, 1) AS MIN_QUANTITY_SELL " +
-    "        , MODIFY_DATE, CREATE_DATE, QUANTITY_MIN_PRICE, QUANTITY_MAX_PRICE" +
-	"        FROM KRC_PRODUCT" +
-	"        WHERE STATUS_ID='A' AND PARTNER_ID IN (1, $1)" +
+	"        SELECT R.PRODUCT_ID, R.PRODUCT_CODE, R.PRODUCT_NAME_INTERNAL PRODUCT_NAME, R.PRODUCT_NAME PRODUCT_NAME_LONG, R.PRODUCT_DESCRIPTION, R.PRODUCT_TYPE_ID, R.BRAND, R.REMARK, R.NUM_IMAGES" +
+	"        , R.NUM_VIDEOS, R.PROVIDER_ID, R.TAX_ID, R.PRODUCT_PRICE , R.PRODUCT_PRICE_FINAL, R.PARTNER_ID, R.PARTNER_NAME " +
+	"        , R.UNIT_ID, R.PRODUCT_CATEGORY_ID, IFNULL(R.MIN_QUANTITY_SELL, 1) AS MIN_QUANTITY_SELL " +
+    "        , R.MODIFY_DATE, R.CREATE_DATE, R.QUANTITY_MIN_PRICE, R.QUANTITY_MAX_PRICE " +
+	"        FROM KRC_PRODUCT R " +
+    "        INNER JOIN (SELECT PRODUCT_TYPE_ID, PRODUCT_TYPE FROM KRC_PRODUCT_TYPE WHERE STATUS_ID = 'A' AND PRODUCT_TYPE_CODE NOT IN ('ASCEN','COUMI','ENERG','SEGUR','PERSO','SEGUR')) T " +
+    "        ON (R.PRODUCT_TYPE_ID = T.PRODUCT_TYPE_ID)" +
+	"        WHERE R.STATUS_ID='A' AND R.PRODUCT_CODE <> '' AND R.PARTNER_ID IN (1, $1)" +
     "   ) A " +
 	"LEFT OUTER JOIN (SELECT PRODUCT_TYPE_ID, PRODUCT_TYPE FROM KRC_PRODUCT_TYPE WHERE STATUS_ID = 'A') D " +
 	"ON (A.PRODUCT_TYPE_ID = D.PRODUCT_TYPE_ID) " +
@@ -246,6 +248,20 @@ export function queryGetProductsAvailableWithPartnerId (): string {
     "ORDER BY PRODUCT_CATEGORY_ID, PERSONE_NAME, PARTNER_ID DESC, RN;";
 	return query;
 }
+
+export function queryGetProductsAvailableWithPartnerIdProcedureCall (): string {
+    const query = "call PL_PRODUCT_CATALOG (38, 32, '13326'" + 
+    ", @v_product_id, @v_product_code, @v_product_name, @v_product_name_long, @v_product_description" +
+    ", @v_product_type , @v_brand, @v_num_images, @v_num_videos, @v_product_price" +
+    ", @v_total_before_discount, @v_tax_amount, @v_persone_id, @v_persone_name, @v_business_name" +
+    ", @v_email, @v_tax_id, @v_tax_apply, @v_product_price_discounted, @v_total_amount" +
+    ", @v_discount_amount , @v_id_unit ,@v_remark , @v_min_quantity_sell , @v_partner_id" +
+    ", @v_partner_name, @v_quantity_min_price, @v_quantity_max_price , @v_product_category_id , @v_rn" +
+    ", @v_delivery_date, @v_delivery_role" +
+    ");";
+	return query;
+}
+
 
 export function queryGetProductsAvailableWithOutPartnerId (): string {
     const query = "SELECT PRODUCT_ID, PRODUCT_CODE, PRODUCT_NAME, PRODUCT_NAME_LONG, PRODUCT_DESCRIPTION, PRODUCT_TYPE, BRAND, NUM_IMAGES, NUM_VIDEOS" +
@@ -273,7 +289,8 @@ export function queryGetProductsAvailableWithOutPartnerId (): string {
 	"        FROM KRC_PRODUCT" +
 	"        WHERE STATUS_ID='A' AND PARTNER_ID = 1" +
     "   ) A " +
-	"LEFT OUTER JOIN (SELECT PRODUCT_TYPE_ID, PRODUCT_TYPE FROM KRC_PRODUCT_TYPE WHERE STATUS_ID = 'A') D " +
+	"LEFT OUTER JOIN (SELECT PRODUCT_TYPE_ID, PRODUCT_TYPE FROM KRC_PRODUCT_TYPE WHERE STATUS_ID = 'A' " +
+    "AND PRODUCT_TYPE_CODE NOT IN ('ASCEN','COUMI','ENERG','SEGUR','PERSO','SEGUR')) D " +
 	"ON (A.PRODUCT_TYPE_ID = D.PRODUCT_TYPE_ID) " +
     "LEFT OUTER JOIN (SELECT CVE_UNIT, ID_UNIT FROM DMD_UNIT) TIP_UNIDAD " +
     "ON (A.UNIT_ID = TIP_UNIDAD.CVE_UNIT) " +
