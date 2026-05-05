@@ -3,6 +3,8 @@
 *.csr
 *.key
 *.pem
+.env
+.env.*
 # Images
 /images/*
 # Visual Studio Code related
