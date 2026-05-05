@@ -20,3 +20,12 @@
 
 # test coverage reports
 /coverage/
+
+# compiled output of tests/scripts (.ts source is canonical)
+/tests/**/*.js
+/tests/**/*.js.map
+/scripts/**/*.js
+/scripts/**/*.js.map
+
+# VS Code workspace files
+*.code-workspace
