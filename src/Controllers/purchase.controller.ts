@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as Querys from "../models/queries.model";
+import { getQuery, getUpdatePurchaseLineCode } from "../models/queriesLoader";
 import { sequelize } from "../models/db.model";
 import { QueryTypes } from "sequelize";
 import * as nodemailer from "nodemailer";
@@ -36,9 +36,9 @@ export async function savePurchasedProducts (req: Request, res: Response): Promi
     const purchasedProducts: PurchasedProduct[] = <Array<PurchasedProduct>>req.body.purchased_products;
     const setProviderPurchasedProductList = new Set<string>();  // contain the email of the different providers
     // Get the last value for the sequence
-    const queryPurchaseSequence = Querys.queryPurchaseSequence();
+    const queryPurchaseSequence = getQuery('GTPRCHSEQ');
     // Insert KRC_PURCHASE
-    const queryInsertPurchased = Querys.queryInsertPurchased();
+    const queryInsertPurchased = getQuery('INSPRCH');
     // Mark the products that have been purchased in the KRC_PRODUCT_AVAIL table
     //const updateProductsAvail = Querys.updateProductsAvail();
     // Insert in the KRF_TRANSACTIONS table the products that have been marked in KRC_PRODUCT_AVAIL
@@ -238,7 +238,7 @@ export async function getPurchaseByUserId (req: Request, res: Response): Promise
     try {
 
         const data = <Array<purchaseByUserId>>await sequelize.query (
-            Querys.queryGetPurchaseByUserId(),
+            getQuery('GTPRCHUSR'),
             {
                 bind: [userId],
                 raw: true,
@@ -250,7 +250,7 @@ export async function getPurchaseByUserId (req: Request, res: Response): Promise
                 console.log ('El valor de userId es: ' + userId.toString());
                 console.log ('El valor de data[index].ALL_STATUS es: ' + data[index].STATUS_ID);
                 const statusToTransitionToReturned = <Array<statusToTransitionTo>>await sequelize.query (
-                    Querys.getStatusToTransitionTo(),
+                    getQuery('STTRNSTO'),
                     {
                         bind: [data[index].STATUS_ID, userId],
                         raw: true,
@@ -320,6 +320,7 @@ export async function getPurchaseLinesByOrderId (req: Request, res: Response): P
         ORDER_ID: number,
         PROVIDER_NAME: string,
         PRODUCT_ID: number,
+        PRODUCT_CODE: number,
         PRODUCT_NAME: string,
         ALL_STATUS: string,
         STATUS_ID: string,
@@ -355,6 +356,7 @@ export async function getPurchaseLinesByOrderId (req: Request, res: Response): P
         ORDER_ID: number,
         PROVIDER_NAME: string,
         PRODUCT_ID: number,
+        PRODUCT_CODE: number,
         PRODUCT_NAME: string,
         ALL_STATUS: string,
         STATUS_ID: string,
@@ -382,7 +384,7 @@ export async function getPurchaseLinesByOrderId (req: Request, res: Response): P
     const result: Array<resultType> = [];
     try {
         const data = <Array<purchaseLineByOrderId>>await sequelize.query (
-            Querys.queryGetPurchaseLinesByOrderId(),
+            getQuery('GTPRCHLN'),
             {
                 bind: [orderId, providerName, userId],
                 raw: true,
@@ -394,7 +396,7 @@ export async function getPurchaseLinesByOrderId (req: Request, res: Response): P
                 console.log ('El valor de userId es: ' + userId.toString());
                 console.log ('El valor de data[index].ALL_STATUS es: ' + data[index].STATUS_ID);
                 const statusToTransitionToReturned = <Array<statusToTransitionTo>>await sequelize.query (
-                    Querys.getStatusToTransitionTo(),
+                    getQuery('STTRNSTO'),
                     {
                         bind: [data[index].STATUS_ID, userId],
                         raw: true,
@@ -406,6 +408,7 @@ export async function getPurchaseLinesByOrderId (req: Request, res: Response): P
                         ORDER_ID: data[index].ORDER_ID,
                         PROVIDER_NAME: data[index].PROVIDER_NAME,
                         PRODUCT_ID: data[index].PRODUCT_ID,
+                        PRODUCT_CODE: data[index].PRODUCT_CODE,
                         PRODUCT_NAME: data[index].PRODUCT_NAME,
                         ALL_STATUS: data[index].ALL_STATUS,
                         STATUS_ID: data[index].STATUS_ID,
@@ -436,6 +439,7 @@ export async function getPurchaseLinesByOrderId (req: Request, res: Response): P
                         ORDER_ID: data[index].ORDER_ID,
                         PROVIDER_NAME: data[index].PROVIDER_NAME,
                         PRODUCT_ID: data[index].PRODUCT_ID,
+                        PRODUCT_CODE: data[index].PRODUCT_CODE,
                         PRODUCT_NAME: data[index].PRODUCT_NAME,
                         ALL_STATUS: data[index].ALL_STATUS,
                         STATUS_ID: data[index].STATUS_ID,
@@ -488,7 +492,7 @@ export async function purchaseLineStateTransition (req: Request, res: Response):
     //const transact = await sequelize.transaction();
     try {
         await sequelize.query (
-            Querys.queryUpdatePurchaseLineState(),
+            getQuery('UPDPLNST'),
             {
                 bind: [nextState, userId, newFecha, orderId, providerName, productId],
                 raw: true,
@@ -497,7 +501,7 @@ export async function purchaseLineStateTransition (req: Request, res: Response):
             }
         );
         const statusToTransitionToReturned = <Array<statusToTransitionTo>>await sequelize.query (
-            Querys.getStatusToTransitionTo(),
+            getQuery('STTRNSTO'),
             {
                 bind: [nextState, userId],
                 raw: true,
@@ -506,7 +510,7 @@ export async function purchaseLineStateTransition (req: Request, res: Response):
         );
         // Now we must get the current status_id of the provider line of the purchase
         // because it could have been changed since the status_id of one of the item lines has changed
-        console.log (Querys.queryGetStatusPurchase());
+        console.log (getQuery('GTSTPRCH'));
         interface statusItemFather {
             ORDER_ID: number,
             PROVIDER_NAME: string,
@@ -515,7 +519,7 @@ export async function purchaseLineStateTransition (req: Request, res: Response):
             NUM_STATUS: number
         }
         const newStatusIdOfTheItemFather = <Array<statusItemFather>>await sequelize.query (
-            Querys.queryGetStatusPurchase(),
+            getQuery('GTSTPRCH'),
             {
                 bind: [orderId, providerName],
                 raw: true,
@@ -524,7 +528,7 @@ export async function purchaseLineStateTransition (req: Request, res: Response):
         );
         // Get the next status_id of the provider line of the purchase
         const statusToTransitionToItemFatherReturned = <Array<statusToTransitionTo>>await sequelize.query (
-            Querys.getStatusToTransitionTo(),
+            getQuery('STTRNSTO'),
             {
                 bind: [newStatusIdOfTheItemFather[0].STATUS_ID, userId],    // Always newStatusIdOfTheItemFather has a simple row, the first row
                 raw: true,
@@ -585,7 +589,7 @@ export async function purchaseStateTransition (req: Request, res: Response): Pro
     //const transact = await sequelize.transaction();
     try {
         await sequelize.query (
-            Querys.queryUpdatePurchaseState(),
+            getQuery('UPDPRCHST'),
             {
                 bind: [nextState, userId, newFecha, orderId, providerName],
                 raw: true,
@@ -594,7 +598,7 @@ export async function purchaseStateTransition (req: Request, res: Response): Pro
             }
         );
         const statusToTransitionToReturned = <Array<statusToTransitionTo>>await sequelize.query (
-            Querys.getStatusToTransitionTo(),
+            getQuery('STTRNSTO'),
             {
                 bind: [nextState, userId],
                 raw: true,
@@ -683,7 +687,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
             // Case 1
             // The price and the quantity of the purchased has been changed by the user
             const result = await sequelize.query (
-                Querys.queryUpdatePurchaseLine(caseToApply, userRole),
+                getQuery(getUpdatePurchaseLineCode(caseToApply, userRole)),
                 {
                     bind: [newPurchased, newProductPrice, isOfficial == "true" ? "Y":null, totalBeforeDiscount,
                         totalAmount, discountAmount, taxAmount,
@@ -694,7 +698,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
             );
             console.log ('El valor de retorno del update es: ' + result[1].toString());
             const statusToTransitionToReturned = <Array<statusToTransitionTo>>await sequelize.query (
-                Querys.getStatusToTransitionTo(),
+                getQuery('STTRNSTO'),
                 {
                     bind: ["O", userId],
                     raw: true,
@@ -705,7 +709,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
                 // get the current values of the BAN_PRICE and BAN_QUANTITY among the state of
                 // the modified purchase line. The state of the modified purchasedline is "O" (OBSERVACIONES)
                 const currentBanQuantityUndBanPriceValue = <Array<banPriceUndBanQuantityValue>>await sequelize.query (
-                    Querys.getBanPriceUndBanQuantityValues(),
+                    getQuery('GTBANPRQT'),
                     {
                         bind: [userId, "O"],
                         raw: true,
@@ -724,7 +728,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
             // Case 2
             // Only the price of the purchased has been changed by the user
             const result = await sequelize.query (
-                Querys.queryUpdatePurchaseLine (caseToApply, userRole),
+                getQuery(getUpdatePurchaseLineCode(caseToApply, userRole)),
                 {
                     bind: [newProductPrice, isOfficial == "true" ? "Y":null, totalBeforeDiscount,
                         totalAmount, discountAmount, taxAmount,
@@ -735,7 +739,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
             );
             console.log ('El valor de retorno del update es: ' + result[1].toString());
             const statusToTransitionToReturned = <Array<statusToTransitionTo>>await sequelize.query (
-                Querys.getStatusToTransitionTo(),
+                getQuery('STTRNSTO'),
                 {
                     bind: ["O", userId],
                     raw: true,
@@ -746,7 +750,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
                 // get the current values of the BAN_PRICE and BAN_QUANTITY among the state of
                 // the modified purchase line. The state of the modified purchasedline is "O" (OBSERVACIONES)
                 const currentBanQuantityUndBanPriceValue = <Array<banPriceUndBanQuantityValue>>await sequelize.query (
-                    Querys.getBanPriceUndBanQuantityValues(),
+                    getQuery('GTBANPRQT'),
                     {
                         bind: [userId, "O"],
                         raw: true,
@@ -766,7 +770,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
             // Case 3
             // Only the quantity has been changed by the user
             const result = await sequelize.query (
-                Querys.queryUpdatePurchaseLine (caseToApply, userRole),
+                getQuery(getUpdatePurchaseLineCode(caseToApply, userRole)),
                 {
                     bind: [newPurchased, totalBeforeDiscount,
                         totalAmount, discountAmount, taxAmount,
@@ -777,7 +781,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
             );
             console.log ('El valor de retorno del update es: ' + result[1].toString());
             const statusToTransitionToReturned = <Array<statusToTransitionTo>>await sequelize.query (
-                Querys.getStatusToTransitionTo(),
+                getQuery('STTRNSTO'),
                 {
                     bind: ["O", userId],
                     raw: true,
@@ -788,7 +792,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
                 // get the current values of the BAN_PRICE and BAN_QUANTITY among the state of
                 // the modified purchase line. The state of the modified purchasedline is "O" (OBSERVACIONES)
                 const currentBanQuantityUndBanPriceValue = <Array<banPriceUndBanQuantityValue>>await sequelize.query (
-                    Querys.getBanPriceUndBanQuantityValues(),
+                    getQuery('GTBANPRQT'),
                     {
                         bind: [userId, "O"],
                         raw: true,
@@ -806,7 +810,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
         } else {
             // Anyway is taken as the case 1
             const result = await sequelize.query (
-                Querys.queryUpdatePurchaseLine(caseToApply, userRole),
+                getQuery(getUpdatePurchaseLineCode(caseToApply, userRole)),
                 {
                     bind: [newPurchased, newProductPrice, isOfficial == "true" ? "Y":null, totalBeforeDiscount,
                         totalAmount, discountAmount, taxAmount,
@@ -817,7 +821,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
             );
             console.log ('El valor de retorno del update es: ' + result[1].toString());
             const statusToTransitionToReturned = <Array<statusToTransitionTo>>await sequelize.query (
-                Querys.getStatusToTransitionTo(),
+                getQuery('STTRNSTO'),
                 {
                     bind: ["O", userId],
                     raw: true,
@@ -828,7 +832,7 @@ export async function modifyPurchaseLine (req: Request, res: Response): Promise<
                 // get the current values of the BAN_PRICE and BAN_QUANTITY among the state of
                 // the modified purchase line. The state of the modified purchasedline is "O" (OBSERVACIONES)
                 const currentBanQuantityUndBanPriceValue = <Array<banPriceUndBanQuantityValue>>await sequelize.query (
-                    Querys.getBanPriceUndBanQuantityValues(),
+                    getQuery('GTBANPRQT'),
                     {
                         bind: [userId, "O"],
                         raw: true,

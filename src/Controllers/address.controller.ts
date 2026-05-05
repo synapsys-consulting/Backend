@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as Querys from "../models/queries.model";
+import { getQuery } from "../models/queriesLoader";
 import { sequelize } from "../models/db.model";
 import { QueryTypes } from "sequelize";
 import { Address } from "../models/address.model";
@@ -9,7 +9,7 @@ export async function getDefaultLogisticAddress (req: Request, res: Response): P
     console.log('El valor de user_id es: ' + user_id.toString());
 
     sequelize.query(
-        Querys.getDefaultLogisticAddress(),
+        getQuery('GTDFLOGAD'),
         {
             bind: [user_id],
             raw: true,
@@ -32,7 +32,7 @@ export async function getLogisticAdresses(req: Request, res: Response): Promise<
     const personeId: number = parseInt(req.params.id);
     try {
         const data = await sequelize.query(
-            Querys.getAdresses(),
+            getQuery('GTADDRS'),
             {
                 bind: [personeId],
                 raw: true,
@@ -243,7 +243,7 @@ export async function updateAddress (req: Request, res: Response): Promise<void>
         console.log('El valor de retorno es: ' + updatedNewDefaultAddress[0]);
         if (updatedNewDefaultAddress[0] === 0 || updatedOldDefaulAddress[0] === 0) {
             transact.rollback();
-            res.status(404).send({ "message": "No se pudo actualizar el usuario ya que no se encontró el usuario en la base de datos." });
+            res.status(404).send({ "message": "No se pudo actualizar la dirección ya que no se encontró la dirección en la base de datos." });
         } else {
             transact.commit();
             res.status(200).send({ "usuariosActualizados": updatedNewDefaultAddress[1] });

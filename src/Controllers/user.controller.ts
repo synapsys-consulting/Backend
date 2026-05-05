@@ -5,7 +5,7 @@ import { PersoneIdentity } from "../models/personeIdentity.model";
 import { UserRole } from "../models/userRole.model";
 import { sequelize } from "../models/db.model";
 import * as jwt from '../services/jwt.service';
-import * as Querys from "../models/queries.model";
+import { getQuery } from "../models/queriesLoader";
 import { QueryTypes } from "sequelize";
 
 const saltRounds = 10;
@@ -483,7 +483,7 @@ export async function loginUserWithPersoneId (req: Request, res: Response): Prom
                 const match = await bcrypt.compare (password, user.password);
                 if (match) {
                     const data = <Array<roleUser>>await sequelize.query (
-                        Querys.getRoleByUser(),
+                        getQuery('GTROLEUSR'),
                         {
                             bind: [ user.user_id ],
                             raw: true,

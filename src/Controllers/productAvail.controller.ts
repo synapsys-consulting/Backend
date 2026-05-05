@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import * as Querys from "../models/queries.model";
+import { getQuery } from "../models/queriesLoader";
 import { sequelize } from "../models/db.model";
 import { QueryTypes } from "sequelize";
 
 export async function getProductsAvail (req: Request, res: Response): Promise<void> {
     sequelize.query(
-        Querys.queryGetProductsAvailable(),
+        getQuery('GTPRODAVL'),
         {
             raw: true,
             type: QueryTypes.SELECT
@@ -20,8 +20,8 @@ export async function getProductsAvail (req: Request, res: Response): Promise<vo
 }
 export async function getProductsAvailWithPartnerId (req: Request, res: Response): Promise<void> {
     const partnerId: number = parseInt(req.params.id);
-    sequelize.query(
-        Querys.queryGetProductsAvailableWithPartnerId(),
+    sequelize.query (
+        getQuery('GTPRODAVPT'),
         {
             bind: [partnerId],
             raw: true,
@@ -37,7 +37,7 @@ export async function getProductsAvailWithPartnerId (req: Request, res: Response
 }
 export async function getProductsAvailWithOutPartnerId (req: Request, res: Response): Promise<void> {
     sequelize.query(
-        Querys.queryGetProductsAvailableWithOutPartnerId(),
+        getQuery('GTPRODAVNP'),
         {
             raw: true,
             type: QueryTypes.SELECT
@@ -53,7 +53,7 @@ export async function getProductsAvailWithOutPartnerId (req: Request, res: Respo
 export async function getProductAvailWithProductId (req: Request, res: Response): Promise<void> {
     const productId: number = parseInt(req.params.id);
     sequelize.query(
-        Querys.getProductAvailWithProductId(),
+        getQuery('GTPRODAVPR'),
         {
             bind: [productId],
             raw: true,

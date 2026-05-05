@@ -17,3 +17,10 @@ export const productsRouter = express.Router();
 
 productsRouter.get("/getProducts", ProductsController.getProducts);
 productsRouter.get('/image/products/:imageFile', ProductsController.getImageFile);
+productsRouter.get("/getTaxType", ProductsController.getTaxType);
+productsRouter.get("/getUnitType", ProductsController.getUnitType);
+productsRouter.get("/getProviders", ProductsController.getProviders);
+productsRouter.get("/getPartners", ProductsController.getPartners);
+productsRouter.get("/getProductTypes/:id", ProductsController.getProductTypes);
+productsRouter.post("/saveNewProduct", ProductsController.saveNewProduct);
+
