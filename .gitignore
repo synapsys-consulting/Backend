@@ -1,0 +1,31 @@
+# Miscellaneous
+*.crt
+*.csr
+*.key
+*.pem
+# Images
+/images/*
+# Visual Studio Code related
+.vscode/
+#build
+/build/
+/build/**/*
+/src/config/db.config.ts
+
+#node_modules
+/node_modules/*
+/node_modules/lodash/*
+/node_modules/lodash/*.js
+/node_modules/lodash/*
+
+# test coverage reports
+/coverage/
+
+# compiled output of tests/scripts (.ts source is canonical)
+/tests/**/*.js
+/tests/**/*.js.map
+/scripts/**/*.js
+/scripts/**/*.js.map
+
+# VS Code workspace files
+*.code-workspace

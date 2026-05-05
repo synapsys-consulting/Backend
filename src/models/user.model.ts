@@ -6,7 +6,7 @@ export class User extends Model {
     public user_name!: string;
     public user_lastname!: string | null;
     public user_firstname!: string | null;
-    public phone_number!: string;
+    public phone_number!: string | null;
     public email!: string;
     public birth_date!: Date | null;
     public zip_code!: string | null;
@@ -14,8 +14,9 @@ export class User extends Model {
     public status_id!: string;
     public eff_date!: Date | null;
     public exp_date!: Date | null;
-    public user_create_id!: string;
-    public user_modify_id!: string | null;
+    public status_date!: Date | null;
+    public user_create_id!: number;
+    public user_modify_id!: number | null;
     public password!: string;
     public role!: string | null;
     public rid!: string | null;
@@ -46,7 +47,6 @@ User.init (
     },
     phone_number: {
         type: DataTypes.STRING(15),
-        allowNull: false
     },
     email: {
         type: DataTypes.STRING(250),
@@ -76,11 +76,11 @@ User.init (
         allowNull: false
     },
     user_create_id: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.BIGINT,
         allowNull: false
     },
     user_modify_id: {
-        type: DataTypes.STRING(50)
+        type: DataTypes.BIGINT
     },
     password: {
         type: DataTypes.STRING(500),

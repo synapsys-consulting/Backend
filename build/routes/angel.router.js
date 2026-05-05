@@ -27,7 +27,7 @@ exports.angelsRouter = void 0;
  * Required External Modules and Interfaces
  */
 const express_1 = __importDefault(require("express"));
-const AngelController = __importStar(require("../Controllers/angel.controller"));
+const AngelController = __importStar(require("../controllers/angel.controller"));
 /**
  * Router Definition
  */
@@ -38,3 +38,4 @@ exports.angelsRouter = express_1.default.Router();
 //angelsRouter.get("/probando-controlador", AngelController.pruebas);
 exports.angelsRouter.put("/update/:id", AngelController.update);
 //angelsRouter.post("/register", AngelController.saveUser);
+//# sourceMappingURL=angel.router.js.map

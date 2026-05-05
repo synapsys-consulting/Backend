@@ -39,3 +39,4 @@ function update(req, res) {
     });
 }
 exports.update = update;
+//# sourceMappingURL=angel.controller.js.map

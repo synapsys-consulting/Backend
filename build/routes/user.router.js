@@ -27,7 +27,7 @@ exports.usersRouter = void 0;
  * Required External Modules and Interfaces
  */
 const express_1 = __importDefault(require("express"));
-const UsersController = __importStar(require("../Controllers/user.controller"));
+const UsersController = __importStar(require("../controllers/user.controller"));
 /**
  * Router Definition
  */
@@ -36,8 +36,10 @@ exports.usersRouter = express_1.default.Router();
  * Controller Definitions
  */
 exports.usersRouter.get("/probando-controlador", UsersController.pruebas);
-exports.usersRouter.post("/login", UsersController.loginUser);
-exports.usersRouter.post("/register", UsersController.saveUser);
+exports.usersRouter.post("/login", UsersController.loginUserWithPersoneId);
+exports.usersRouter.post("/loginWithoutPass", UsersController.loginWithoutPass);
+exports.usersRouter.post("/register", UsersController.saveUserWithPersoneId);
 exports.usersRouter.put("/updateUser/:id", UsersController.updateUser);
 exports.usersRouter.delete("/deleteUser/:id", UsersController.deleteUser);
 exports.usersRouter.put("/changePassword/:id", UsersController.changePassword);
+//# sourceMappingURL=user.router.js.map

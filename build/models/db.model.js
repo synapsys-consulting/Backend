@@ -21,10 +21,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sequelize = void 0;
 const sequelize_1 = require("sequelize");
-const db_config_1 = require("../config/db.config");
+//import { datosConexion } from "../config/db.config";
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-exports.sequelize = new sequelize_1.Sequelize(process.env.DB || "", process.env.USER || "", process.env.PASSWORD, {
+console.log("El valor de DB es: " + process.env.DB);
+console.log("El valor de USER es: " + process.env.USUARIO);
+console.log("El valor de PASSWORD es:  " + process.env.PASSWORD);
+console.log("El valor de timezone es: " + process.env.timezone);
+console.log("El valor de HOST es: " + process.env.HOST);
+console.log("El valor de pool_max es: " + parseInt(process.env.pool_max || "").toString());
+console.log("El valor de pool_max es: " + parseInt(process.env.pool_min || "").toString());
+exports.sequelize = new sequelize_1.Sequelize(process.env.DB || "", process.env.USUARIO || "", process.env.PASSWORD, {
+    //export const sequelize = new Sequelize(datosConexion.DB, datosConexion.USER, datosConexion.PASSWORD, {
+    //host: datosConexion.HOST,
     host: process.env.HOST,
     dialect: "mariadb",
     dialectOptions: {
@@ -36,10 +45,10 @@ exports.sequelize = new sequelize_1.Sequelize(process.env.DB || "", process.env.
         max: parseInt(process.env.pool_max || ""),
         //min: datosConexion.pool.min,
         min: parseInt(process.env.pool_min || ""),
+        acquire: parseInt(process.env.acquire || ""),
         //acquire: datosConexion.pool.acquire,
-        acquire: db_config_1.datosConexion.pool.acquire,
         //idle: datosConexion.pool.idle
-        idle: db_config_1.datosConexion.pool.idle
+        idle: parseInt(process.env.idle || "")
     },
     define: {
         freezeTableName: true,
@@ -57,3 +66,4 @@ exports.sequelize
     .catch(err => {
     console.error('Imposible conectar con la BDD:', err);
 });
+//# sourceMappingURL=db.model.js.map

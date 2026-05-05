@@ -1,53 +1,57 @@
-import { Model, DataTypes } from "sequelize";
-import { sequelize } from "./db.model";
-import { Product } from "./product.model";
+import { Model, DataTypes } from 'sequelize';
+import { sequelize } from './db.model';
 
-export class ProductCategory extends Model {
-    public product_category_id!: number;
-    public product_category!: string;
-    public remark!: number;
-    public language_code!: string;
-    public status_id!: string;
+export class Shift extends Model {
+    public shift_id!: number;
+    public shift_name!: string;
+    public shift_desc!: number;
+    public shift_hour_start!: string;
+    public shift_hour_end!: string;
+    public day_type!: string | null;
+    public status_id!: string | null;
+    public status_date!: Date;
     public eff_date!: Date | null;
     public exp_date!: Date | null;
-    public status_date!: Date;
     public user_create_id!: number | null;
     public user_modify_id!: number | null;
-    public scenario!: string | null;
     public partner_id!: string;
     public partner_name!: string;
-
+    public scenario!: string;
+    
     //timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
-ProductCategory.init (
-{
-    product_category_id: {
+Shift.init({
+    shift_id: {
         type: DataTypes.BIGINT,
         primaryKey: true,
         allowNull: false,
         autoIncrement: true
     },
-    product_category: {
+    shift_name: {
+        type: DataTypes.STRING(30),
+        allowNull: true
+    },
+    shift_desc: {
         type: DataTypes.STRING(150),
+        allowNull: true
+    },
+    shift_hour_start: {
+        type: DataTypes.STRING(8),
         allowNull: false
     },
-    remark: {
-        type: DataTypes.DECIMAL(20, 0),
+    shift_hour_end: {
+        type: DataTypes.STRING(8),
         allowNull: false
     },
-    language_code: {
-        type: DataTypes.STRING(10),
-        allowNull: false
-    },
-    status_id: {
-        type: DataTypes.STRING(3),
+    day_type: {
+        type: DataTypes.STRING(30),
         allowNull: false
     },
     eff_date: {
         type: DataTypes.DATE,
-        allowNull: true
+        allowNull:false
     },
     exp_date: {
         type: DataTypes.DATE,
@@ -57,17 +61,16 @@ ProductCategory.init (
         type: DataTypes.DATE,
         allowNull: false
     },
+    status_id: {
+        type: DataTypes.STRING(1),
+        allowNull: false
+    },
     user_create_id: {
         type: DataTypes.BIGINT,
-        allowNull: true
+        allowNull: false
     },
     user_modify_id: {
-        type: DataTypes.BIGINT,
-        allowNull: true
-    },
-    scenario: {
-        type: DataTypes.STRING(10),
-        allowNull: true
+        type: DataTypes.BIGINT
     },
     partner_id: {
         type: DataTypes.STRING(20),
@@ -76,10 +79,14 @@ ProductCategory.init (
     partner_name: {
         type: DataTypes.STRING(100),
         allowNull: false
-    }
+    },
+    scenario: {
+        type: DataTypes.STRING(10),
+        allowNull: false
+    },
 },
 {
-    tableName: "KRC_PRODUCT_CATEGORY",
+    tableName: "KRC_SHIFT",
     sequelize,
     //paranoid: true,
     createdAt: 'create_date',

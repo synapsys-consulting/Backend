@@ -25,7 +25,6 @@ User.init({
     },
     phone_number: {
         type: sequelize_1.DataTypes.STRING(15),
-        allowNull: false
     },
     email: {
         type: sequelize_1.DataTypes.STRING(250),
@@ -82,5 +81,7 @@ User.init({
     sequelize: db_model_1.sequelize,
     //paranoid: true,
     createdAt: 'create_date',
-    updatedAt: 'modify_date',
+    updatedAt: 'modify_date'
+    //deletedAt: 'status_date'
 });
+//# sourceMappingURL=user.model.js.map

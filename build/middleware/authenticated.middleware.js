@@ -29,3 +29,4 @@ function ensureAuth(req, res, next) {
     }
 }
 exports.ensureAuth = ensureAuth;
+//# sourceMappingURL=authenticated.middleware.js.map
