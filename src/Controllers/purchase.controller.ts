@@ -187,6 +187,22 @@ export async function savePurchasedProducts (req: Request, res: Response): Promi
 }
 export async function getPurchaseByUserId (req: Request, res: Response): Promise<void> {
     const userId: number = parseInt(req.params.id);
+    const dateFromRaw = req.query.dateFrom;
+    const dateToRaw = req.query.dateTo;
+    const dateFrom = typeof dateFromRaw === 'string' ? dateFromRaw : undefined;
+    const dateTo = typeof dateToRaw === 'string' ? dateToRaw : undefined;
+    const useRange = !!(dateFrom && dateTo);
+    const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+    if (useRange) {
+        if (!ISO_DATE.test(dateFrom!) || !ISO_DATE.test(dateTo!)) {
+            res.status(400).send({ message: 'dateFrom/dateTo deben tener formato YYYY-MM-DD' });
+            return;
+        }
+        if (dateFrom! > dateTo!) {
+            res.status(400).send({ message: 'dateFrom no puede ser posterior a dateTo' });
+            return;
+        }
+    }
     interface purchaseByUserId {
         ORDER_ID: number,
         PROVIDER_NAME: string,
@@ -238,9 +254,9 @@ export async function getPurchaseByUserId (req: Request, res: Response): Promise
     try {
 
         const data = <Array<purchaseByUserId>>await sequelize.query (
-            getQuery('GTPRCHUSR'),
+            getQuery(useRange ? 'GTPRCHUSRR' : 'GTPRCHUSR'),
             {
-                bind: [userId],
+                bind: useRange ? [userId, dateFrom, dateTo] : [userId],
                 raw: true,
                 type: QueryTypes.SELECT
             }

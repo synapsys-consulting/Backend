@@ -51,7 +51,7 @@ function main(): void {
     lines.push(`-- Total INSERTs: ${ENTRIES.length}`);
     lines.push('-- ');
     lines.push('-- IMPORTANTE: revisar la salida del SELECT final ANTES de hacer COMMIT.');
-    lines.push('-- Si k_count != 31, ejecutar ROLLBACK en lugar de COMMIT.');
+    lines.push(`-- Si k_count != ${ENTRIES.length}, ejecutar ROLLBACK en lugar de COMMIT.`);
     lines.push('-- =====================================================================');
     lines.push('');
     lines.push('START TRANSACTION;');
@@ -65,8 +65,8 @@ function main(): void {
     lines.push('-- ===== Validación =====');
     lines.push("SELECT COUNT(*) AS k_count FROM KRC_QUERY WHERE SCENARIO = 'K';");
     lines.push('');
-    lines.push('-- Si k_count = 31 → ejecutar:  COMMIT;');
-    lines.push('-- Si k_count != 31 → ejecutar: ROLLBACK;');
+    lines.push(`-- Si k_count = ${ENTRIES.length} → ejecutar:  COMMIT;`);
+    lines.push(`-- Si k_count != ${ENTRIES.length} → ejecutar: ROLLBACK;`);
 
     const outPath = path.join(__dirname, 'migrate_queries_to_db.sql');
     fs.writeFileSync(outPath, lines.join('\n'), 'utf8');

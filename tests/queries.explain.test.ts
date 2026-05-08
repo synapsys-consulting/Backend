@@ -38,6 +38,7 @@ function collectQueries(): QueryEntry[] {
         ['GTPRCHSEQ', 'queryPurchaseSequence'],
         ['GTPRCHUSRO', 'queryGetPurchaseByUserIdOldVersion'],
         ['GTPRCHUSR', 'queryGetPurchaseByUserId'],
+        ['GTPRCHUSRR', 'queryGetPurchaseByUserIdRange'],
         ['GTPRCHLNO', 'queryGetPurchaseLinesByOrderIdOld'],
         ['GTPRCHLN', 'queryGetPurchaseLinesByOrderId'],
         ['GTSTPRCH', 'queryGetStatusPurchase'],
