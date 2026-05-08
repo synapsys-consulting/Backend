@@ -68,6 +68,13 @@ export const ENTRIES: Entry[] = [
         functionality: 'Pantalla "Mis compras"',
     },
     {
+        code: 'GTPRCHUSRR',
+        fnName: 'queryGetPurchaseByUserIdRange',
+        name: 'Compras del usuario (rango fechas para cerradas)',
+        description: 'Como GTPRCHUSR pero las cerradas (A,N) se filtran por ORDER_DATE BETWEEN $2 AND $3',
+        functionality: 'Histórico "Servidos/Anulados"',
+    },
+    {
         code: 'GTPRCHLN',
         fnName: 'queryGetPurchaseLinesByOrderId',
         name: 'Líneas de compra por order_id',
