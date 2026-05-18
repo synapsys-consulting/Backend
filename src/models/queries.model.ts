@@ -38,8 +38,8 @@ export function getProducts (): string {
         , PROD.EFF_DATE
         , PROD.EXP_DATE
         , PROD.DAYS_EXP
-        , PROD.EXPOILED_FLAG
-        , PROD.COUNTABLE_FLAG
+        , PRODUCT_TYPE.BAN_EXPIRES
+        , PRODUCT_TYPE.BAN_INVENTORY
         , PROD.SOURCE_ID
         , PROD.NUM_IMAGES
         , PROD.NUM_VIDEOS
@@ -77,7 +77,7 @@ export function getProductsWithTags(): string {
     , PRODUCT.MIN_DAYS_DELIVERY, PRODUCT.MAX_DAYS_DELIVERY, PRODUCT.REMARK
     , PRODUCT.DAYS_DELIVERY, PRODUCT.PRODUCT_TYPE_ID, PRODUCT.PROVIDER_ID
     , PRODUCT.PERSONE_NAME, PRODUCT.PARTNER_ID, PRODUCT.PARTNER_NAME, PRODUCT.EFF_DATE
-    , PRODUCT.EXP_DATE, PRODUCT.DAYS_EXP, PRODUCT.EXPOILED_FLAG, PRODUCT.COUNTABLE_FLAG
+    , PRODUCT.EXP_DATE, PRODUCT.DAYS_EXP, PRODUCT.BAN_EXPIRES, PRODUCT.BAN_INVENTORY
     , PRODUCT.SOURCE_ID, PRODUCT.NUM_IMAGES, PRODUCT.NUM_VIDEOS
     FROM
     (
@@ -115,8 +115,8 @@ export function getProductsWithTags(): string {
             , PROD.EFF_DATE
             , PROD.EXP_DATE
             , PROD.DAYS_EXP
-            , PROD.EXPOILED_FLAG
-            , PROD.COUNTABLE_FLAG
+            , PRODUCT_TYPE.BAN_EXPIRES
+            , PRODUCT_TYPE.BAN_INVENTORY
             , PROD.SOURCE_ID
             , PROD.NUM_IMAGES
             , PROD.NUM_VIDEOS
@@ -1162,7 +1162,7 @@ export function queryInsertNewProduct(): string {
     ", sysdate()" + // STATUS_DATE
     ", $27" + // USER_CREATE_ID
     ", 'APP'" + // SCENARIO
-    ", 'Y'" + // COUNTABLE_FLAG
+    ", (SELECT BAN_INVENTORY FROM KRRI.KRC_PRODUCT_TYPE WHERE PRODUCT_TYPE_ID = $18)" + // COUNTABLE_FLAG ← KRC_PRODUCT_TYPE.BAN_INVENTORY
     ", 'APP'" + // SOURCE_ID
     ");";
     return sql_query;

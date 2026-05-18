@@ -50,8 +50,8 @@ INSERT INTO KRC_QUERY (
         , PROD.EFF_DATE
         , PROD.EXP_DATE
         , PROD.DAYS_EXP
-        , PROD.EXPOILED_FLAG
-        , PROD.COUNTABLE_FLAG
+        , PRODUCT_TYPE.BAN_EXPIRES
+        , PRODUCT_TYPE.BAN_INVENTORY
         , PROD.SOURCE_ID
         , PROD.NUM_IMAGES
         , PROD.NUM_VIDEOS
@@ -598,7 +598,7 @@ INSERT INTO KRC_QUERY (
         , SCENARIO
         , COUNTABLE_FLAG
         , SOURCE_ID
-    )VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, sysdate(), sysdate(), sysdate(), sysdate(), $27, ''APP'', ''Y'', ''APP'');',
+    )VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, sysdate(), sysdate(), sysdate(), sysdate(), $27, ''APP'', (SELECT BAN_INVENTORY FROM KRRI.KRC_PRODUCT_TYPE WHERE PRODUCT_TYPE_ID = $18), ''APP'');',
     'Insertar nuevo producto',
     'INSERT en KRC_PRODUCT con todos los campos',
     'A',
