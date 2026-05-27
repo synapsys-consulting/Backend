@@ -33,7 +33,28 @@ export async function savePurchasedProducts (req: Request, res: Response): Promi
         ORDER_ID: number,
         CURRENT_DAY: number
     }
+    interface UserEntity {
+        ENTITY_ID: number;
+    }
     const purchasedProducts: PurchasedProduct[] = <Array<PurchasedProduct>>req.body.purchased_products;
+
+    // PARTNER_ID de la compra = entidad 'R' por defecto del usuario logueado (KRC_USER_ENTITY).
+    // Se calcula una sola vez por compra (es el comprador, igual para todas las líneas).
+    const userId = purchasedProducts?.[0]?.user_id;
+    if (userId === undefined || userId === null) {
+        res.status(400).json({ error: 'user_id requerido en purchased_products' });
+        return;
+    }
+    const entityRows = <Array<UserEntity>> await sequelize.query(
+        getQuery('USERPART'),
+        { bind: [userId], type: QueryTypes.SELECT, raw: true }
+    );
+    const entityId = entityRows[0]?.ENTITY_ID;
+    if (entityId === undefined || entityId === null) {
+        res.status(400).json({ error: 'El usuario no tiene una entidad partner por defecto (KRC_USER_ENTITY).' });
+        return;
+    }
+
     const setProviderPurchasedProductList = new Set<string>();  // contain the email of the different providers
     // Get the last value for the sequence
     const queryPurchaseSequence = getQuery('GTPRCHSEQ');
@@ -76,10 +97,10 @@ export async function savePurchasedProducts (req: Request, res: Response): Promi
 
             await sequelize.query(queryInsertPurchased,
                 {
-                    bind: [orderId, currentDay.toString() + '-' + ("00000" + orderId.toString()).slice(-5) + '-' + purchasedProducts[index].persone_name, 
+                    bind: [orderId, currentDay.toString() + '-' + ("00000" + orderId.toString()).slice(-5) + '-' + purchasedProducts[index].persone_name,
                     purchasedProducts[index].persone_name, purchasedProducts[index].product_name, purchasedProducts[index].product_id,
                     purchasedProducts[index].purchased, purchasedProducts[index].product_price, totalBeforeDiscount, totalAmount, openAmount, discountAmount,
-                    purchasedProducts[index].tax_id, taxAmount, purchasedProducts[index].user_id, purchasedProducts[index].partner_id, purchasedProducts[index].partner_name
+                    purchasedProducts[index].tax_id, taxAmount, purchasedProducts[index].user_id, entityId
                     ],
                     type: QueryTypes.INSERT,
                     transaction: transact

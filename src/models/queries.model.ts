@@ -811,14 +811,29 @@ export function queryInsertPurchased (): string {
     ", EMAIL" +
     ", DELIVERY_DATE" +
     ", DISCOUNT_TYPE" +
+    ", PROVIDER_ID" +
     ") " +
     "VALUES " +
     "(" +
     "$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, " +
-    "sysdate(), sysdate(), sysdate(), sysdate(), sysdate(), 'E', $14, null, 'APP', $15, $16, " +
-    "'', 0, 0, '', null, '', '', sysdate(), 'PCT'" +
+    "sysdate(), sysdate(), sysdate(), sysdate(), sysdate(), 'E', $14, null, 'APP', $15, " +
+    "COALESCE((SELECT PARTNER_NAME FROM KRC_PARTNER WHERE PARTNER_ID = $15), ''), " +
+    "'', 0, 0, '', null, '', '', sysdate(), 'PCT', " +
+    "(SELECT PROVIDER_ID FROM KRC_PRODUCT WHERE PRODUCT_ID = $5)" +
     ");"
     ;
+    return query;
+}
+
+//
+// Entidad partner por defecto del usuario logueado (KRC_USER_ENTITY).
+// Devuelve el ENTITY_ID que se usa como PARTNER_ID de la compra.
+// (Existe también en KRC_QUERY con QUERY_CODE='USERPART'; este es el fallback.)
+//
+export function queryGetEntityIdByUser (): string {
+    const query =
+        "SELECT ENTITY_ID FROM KRC_USER_ENTITY " +
+        "WHERE ENTITY_TYPE='R' AND DEFAULT_FLAG='Y' AND USER_ID=$1 LIMIT 1";
     return query;
 }
 //

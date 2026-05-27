@@ -172,6 +172,13 @@ export const ENTRIES: Entry[] = [
         functionality: 'Confirmar compra',
     },
     {
+        code: 'USERPART',
+        fnName: 'queryGetEntityIdByUser',
+        name: 'Entidad partner por defecto del usuario',
+        description: "SELECT ENTITY_ID de KRC_USER_ENTITY (ENTITY_TYPE='R', DEFAULT_FLAG='Y') para un USER_ID",
+        functionality: 'Confirmar compra (PARTNER_ID del comprador)',
+    },
+    {
         code: 'GTDFLOGAD',
         fnName: 'getDefaultLogisticAddress',
         name: 'Dirección logística por defecto del usuario',
