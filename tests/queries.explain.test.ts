@@ -48,6 +48,7 @@ function collectQueries(): QueryEntry[] {
         ['STTRNSTO', 'getStatusToTransitionTo'],
         ['GTBANPRQT', 'getBanPriceUndBanQuantityValues'],
         ['INSPRCH', 'queryInsertPurchased'],
+        ['USERPART', 'queryGetEntityIdByUser'],
         ['GTTRNSEQ', 'queryTransactionsSequence'],
         ['INSTRN', 'querySaveTransaction'],
         ['UPDPRDAVL', 'updateProductsAvail'],

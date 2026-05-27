@@ -39,6 +39,7 @@ const simpleFunctions: string[] = [
     'queryInsertNewProduct',
     'queryNewProductSequence',
     'getShifts',
+    'queryGetEntityIdByUser',
 ];
 
 const updatePurchaseLineCases: Array<[number, string]> = [
@@ -64,7 +65,7 @@ function countChar(text: string, ch: string): number {
 
 describe('queries.model.ts — syntactic validation (level 1)', () => {
     describe('Total expected exports', () => {
-        it('exports the 38 simple functions plus queryUpdatePurchaseLine', () => {
+        it('exports the 39 simple functions plus queryUpdatePurchaseLine', () => {
             const exported = Object.keys(Querys).filter(
                 (k) => typeof (Querys as Record<string, unknown>)[k] === 'function',
             );
