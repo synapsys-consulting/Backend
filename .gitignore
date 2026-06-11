@@ -35,3 +35,6 @@
 # MCP local (servidor MariaDB de solo lectura)
 /.mcp.json
 /tools/
+
+# Instrucciones locales de Claude Code
+/CLAUDE.md
