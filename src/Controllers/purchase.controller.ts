@@ -88,7 +88,8 @@ export async function savePurchasedProducts (req: Request, res: Response): Promi
             //const totalBeforeDiscountBase10000: number = totalBeforeDiscount*10000;
             const totalAmount: number = purchasedProducts[index].purchased * purchasedProducts[index].total_amount;
             //const totalAmountBase10000: number = totalAmount * 10000;
-            const openAmount = 0;
+            //const openAmount = 0;
+            const openAmount = totalAmount;
             //const openAmountBase10000: number = openAmount * 10000;
             const discountAmount = purchasedProducts[index].purchased * purchasedProducts[index].discount_amount;
             //const discountAmountBase10000:number = discountAmount * 10000;
