@@ -31,3 +31,7 @@
 
 # VS Code workspace files
 *.code-workspace
+
+# MCP local (servidor MariaDB de solo lectura)
+/.mcp.json
+/tools/
